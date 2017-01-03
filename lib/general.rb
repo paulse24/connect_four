@@ -9,17 +9,19 @@ class Game
   end
 
   def create_board
-    @fields = []
+    fields = []
     7.times do
       column_array = []
       6.times do
         column_array << Field.new
       end
-      @fields << column_array
+      fields << column_array
     end
+    return fields
   end
 
   def turn
+    display_board
     drop_stone
     check_victory
     case @active_player
@@ -27,6 +29,24 @@ class Game
     when @player2 then @active_player = @player1
     end
     self.turn
+  end
+
+  def display_board
+    #rudimentary
+    row = 6
+    6.times do
+      row -= 1
+      @fields.each do |column|
+        case column[row].status
+        when 0 then print "[ ]"
+        when 1 then print "[X]"
+        when 2 then print "[O]"
+        when 3 then print "[V]"
+        end
+      end
+      puts "\r\n"
+    end
+
   end
 
   def drop_stone
@@ -49,7 +69,7 @@ class Game
         selected_column = gets.chomp.to_i - 1
       end
     end
-    @fields[selected_column[target_row]].status = @active_player.id
+    @fields[selected_column][target_row].status = @active_player.id
 
   end
 
@@ -96,7 +116,7 @@ class Game
     @fields[0..3].each_with_index do |column, c_i|
       column[0..2].each_with_index do |field, r_i|
         series = []
-        series << field << @fields[c_i+1[r_i-1]] << @fields[c_i+2[r_i-2]] << @fields[c_i+3[r_i-3]]
+        series << field << @fields[c_i+1][r_i-1] << @fields[c_i+2][r_i-2] << @fields[c_i+3][r_i-3]
         series_counter = series.take_while {|k| k.status == @active_player.id}
         if series_counter.length == 4
           victory_end(series)
@@ -104,7 +124,7 @@ class Game
       end
       column[3..5].each_with_index do |field, r_i|
         series = []
-        series << field << @fields[c_i+1[r_i+1]] << @fields[c_i+2[r_i+2]] << @fields[c_i+3[r_i+3]]
+        series << field << @fields[c_i+1][r_i+1] << @fields[c_i+2][r_i+2] << @fields[c_i+3][r_i+3]
         series_counter = series.take_while {|k| k.status == @active_player.id}
         if series_counter.length == 4
           victory_end(series)
