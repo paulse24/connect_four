@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 
 =begin
 What do I need?
@@ -22,11 +22,13 @@ game.save & game.exit
 =end
 
 describe Game do
-  before(:all) do
-    my_game = Game.new
-  end
 
   describe '.new' do
+
+    before(:all) do
+      my_game = Game.new
+    end
+    
     it 'creates a new game object' do
       expect(my_game).to be_instance_of(Game)
     end
@@ -60,6 +62,6 @@ describe Game do
 end
 
 describe Field do
-  
+
 
 end
