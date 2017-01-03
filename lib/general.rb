@@ -86,7 +86,24 @@ class Game
     end
 
     #diagonals
-    
+    @fields[0..3].each_with_index do |column, c_i|
+      column[0..2].each_with_index do |field, r_i|
+        series = []
+        series << field << @fields[c_i+1[r_i-1]] << @fields[c_i+2[r_i-2]] << @fields[c_i+3[r_i-3]]
+        series_counter = series.take_while {|k| k.id == @active_player.id}
+        if series_counter.length == 4
+          victory_end(series)
+        end
+      end
+      column[3..5].each_with_index do |field, r_i|
+        series = []
+        series << field << @fields[c_i+1[r_i+1]] << @fields[c_i+2[r_i+2]] << @fields[c_i+3[r_i+3]]
+        series_counter = series.take_while {|k| k.id == @active_player.id}
+        if series_counter.length == 4
+          victory_end(series)
+        end
+      end
+    end
   end
 
   def victory_end(series)
@@ -115,7 +132,7 @@ class Player
   end
 
   def get_name
-    puts "Hello, #{@color} Player. What's your name?"
+    puts "Hello, Player #{id}. What's your name?"
     name = gets.chomp
     while name == nil || name == ''
       name = gets.chomp
