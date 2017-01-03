@@ -1,3 +1,3 @@
 require_relative 'general'
-my_game = Game.new
-my_game.turn
+my_session = Session.new
+my_session.session_turn

@@ -18,7 +18,6 @@ class Game
     when @player1 then @active_player = @player2
     when @player2 then @active_player = @player1
     end
-    self.turn
   end
 
 private
@@ -185,6 +184,15 @@ class Session
     end
   end
 
+  def session_turn
+    @current_game.turn
+    while continue? == true
+      @current_game.turn
+    end
+    abort("Thanks for playing!")
+  end
+
+private
   def new?
     puts "Welcome to Paul's version of Connect4. I hope you enjoy it."
     puts "Would you like to:"
@@ -207,7 +215,7 @@ class Session
     File.open("saved_games.yml", "r").each("\n\n") do |object|
       games << YAML.load(object)
     end
-    games.each.with_index {|game, index| puts "[#{index + 1}]- #{game.player1.name.capitalize} & #{game.player1.name.capitalize} "}
+    games.each.with_index {|game, index| puts "[#{index + 1}]- #{game.player1.name.capitalize} vs. #{game.player2.name.capitalize} "}
     puts "Please indicate which saved game you would like to load."
     indication = gets.chomp.to_i - 1
     while indication > games.length || indication < 0
