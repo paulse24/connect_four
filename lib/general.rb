@@ -8,6 +8,18 @@ class Game
     @victor = nil
   end
 
+  def turn
+    display_board
+    drop_stone
+    check_victory
+    case @active_player
+    when @player1 then @active_player = @player2
+    when @player2 then @active_player = @player1
+    end
+    self.turn
+  end
+
+private
   def create_board
     fields = []
     7.times do
@@ -20,19 +32,7 @@ class Game
     return fields
   end
 
-  def turn
-    display_board
-    drop_stone
-    check_victory
-    case @active_player
-    when @player1 then @active_player = @player2
-    when @player2 then @active_player = @player1
-    end
-    self.turn
-  end
-
   def display_board
-    #rudimentary
     row = 6
     6.times do
       row -= 1
@@ -46,7 +46,6 @@ class Game
       end
       puts "\r\n"
     end
-
   end
 
   def drop_stone
@@ -74,7 +73,12 @@ class Game
   end
 
   def check_victory
-    #rows
+    check_rows
+    check_columns
+    check_diagonals
+  end
+
+  def check_rows
     row = 0
     6.times do
       series_counter = 0
@@ -93,13 +97,14 @@ class Game
       end
       row += 1
     end
+  end
 
-    #columns
+  def check_columns
     @fields.each do |column|
       series_counter = 0
       series = []
       column.each do |field|
-        if field == @active_player.id
+        if field.status == @active_player.id
           series_counter += 1
           series << field
         else
@@ -111,8 +116,9 @@ class Game
         end
       end
     end
+  end
 
-    #diagonals
+  def check_diagonals
     @fields[0..3].each_with_index do |column, c_i|
       column[0..2].each_with_index do |field, r_i|
         series = []
