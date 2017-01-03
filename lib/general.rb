@@ -1,5 +1,5 @@
 class Game
-  attr_accessor :player1, :player2, :active_player, :fields, :victor,
+  attr_accessor :player1, :player2, :active_player, :fields
   def initialize
     @player1 = Player.new(1)
     @player2 = Player.new(2)
@@ -42,15 +42,62 @@ class Game
         target_row = i
       end
     end
-  
+
 
   end
 
   def check_victory
+    #rows
+    row = 0
+    6.times do
+      series_counter = 0
+      series = []
+      @fields.each do |column|
+        if column[row].status == @active_player.id
+          series_counter += 1
+          series << column[row]
+        else
+          series_counter = 0
+          series = []
+        end
+        if series_counter == 4
+          victory_end(series)
+        end
+      end
+      row += 1
+    end
 
+    #columns
+    @fields.each do |column|
+      series_counter = 0
+      series = []
+      column.each do |field|
+        if field == @active_player.id
+          series_counter += 1
+          series << field
+        else
+          series_counter = 0
+          series = []
+        end
+        if series_counter == 4
+          victory_end(series)
+        end
+      end
+    end
+
+    #diagonals
+    
   end
 
-
+  def victory_end(series)
+    puts "Congratulations!"
+    puts "#{@active_player.name} has won the game."
+    series.each do |k|
+      k.status = 3
+    end
+    display_board
+    abort()
+  end
 end
 
 class Field
