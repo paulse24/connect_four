@@ -9,13 +9,13 @@ class Game
   end
 
   def create_board
-    @field = []
+    @fields = []
     7.times do
       column_array = []
       6.times do
         column_array << Field.new
       end
-      @field << column_array
+      @fields << column_array
     end
   end
 
@@ -26,23 +26,30 @@ class Game
     when @player1 then @active_player = @player2
     when @player2 then @active_player = @player1
     end
+    self.turn
   end
 
   def drop_stone
     puts "#{@active_player.name}, please choose a column to drop your stone into."
     selected_column = gets.chomp.to_i - 1
-    while selected_column < 0 || selected_column > 6
-      puts "This is not a valid choice. Please enter a number between 1 and 7."
-      selected_column = gets.chomp.to_i - 1
-    end
     target_row = nil
-    fields[selected_column].each_with_index do |k, i|
-      next if target_row != nil
-      if k.status == 0
-        target_row = i
+    while target_row == nil
+      while selected_column < 0 || selected_column > 6
+        puts "This is not a valid choice. Please enter a number between 1 and 7."
+        selected_column = gets.chomp.to_i - 1
+      end
+      @fields[selected_column].each_with_index do |k, i|
+        next if target_row != nil
+        if k.status == 0
+          target_row = i
+        end
+      end
+      if target_row == nil
+        puts "This row is full. Please indicate another."
+        selected_column = gets.chomp.to_i - 1
       end
     end
-
+    @fields[selected_column[target_row]].status = @active_player.id
 
   end
 
@@ -90,7 +97,7 @@ class Game
       column[0..2].each_with_index do |field, r_i|
         series = []
         series << field << @fields[c_i+1[r_i-1]] << @fields[c_i+2[r_i-2]] << @fields[c_i+3[r_i-3]]
-        series_counter = series.take_while {|k| k.id == @active_player.id}
+        series_counter = series.take_while {|k| k.status == @active_player.id}
         if series_counter.length == 4
           victory_end(series)
         end
@@ -98,7 +105,7 @@ class Game
       column[3..5].each_with_index do |field, r_i|
         series = []
         series << field << @fields[c_i+1[r_i+1]] << @fields[c_i+2[r_i+2]] << @fields[c_i+3[r_i+3]]
-        series_counter = series.take_while {|k| k.id == @active_player.id}
+        series_counter = series.take_while {|k| k.status == @active_player.id}
         if series_counter.length == 4
           victory_end(series)
         end
