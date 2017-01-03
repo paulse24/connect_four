@@ -1,3 +1,5 @@
+require 'yaml'
+
 class Game
   attr_accessor :player1, :player2, :active_player, :fields
   def initialize
@@ -171,5 +173,78 @@ class Player
       name = gets.chomp
     end
     return name
+  end
+end
+
+class Session
+  attr_accessor :current_game
+  def initialize
+    case new?
+    when true then @current_game = Game.new
+    when false then @current_game = load_game
+    end
+  end
+
+  def new?
+    puts "Welcome to Paul's version of Connect4. I hope you enjoy it."
+    puts "Would you like to:"
+    puts "[1]-Make a New Game?"
+    puts "[2]-Load a Saved Game?"
+    choice = gets.chomp.to_i
+    while !choice == 1 && !choice == 2
+      puts "This is not a valid response. Please enter 1 or 2."
+      choice = gets.chomp.to_i
+    end
+    if choice == 1
+      return true
+    elsif choice == 2
+      return false
+    end
+  end
+
+  def load_game
+    games = []
+    File.open("saved_games.yml", "r").each("\n\n") do |object|
+      games << YAML.load(object)
+    end
+    games.each.with_index {|game, index| puts "[#{index + 1}]- #{game.player1.name.capitalize} & #{game.player1.name.capitalize} "}
+    puts "Please indicate which saved game you would like to load."
+    indication = gets.chomp.to_i - 1
+    while indication > games.length || indication < 0
+      "Not a valid choice. Please re-enter."
+      indication = gets.chomp.to_i
+    end
+    game = games[indication]
+    return game
+  end
+
+  def save_game
+    saved_game = @current_game.to_yaml
+    f = File.open("saved_games.yml", "a")
+    f.puts(saved_game + "\n")
+    f.close
+  end
+
+  def continue?
+    puts "Hello again. Would you like to:"
+    puts "[1]-Continue?"
+    puts "[2]-Save Your Game and Continue?"
+    puts "[3]-Save and Exit?"
+    choice = gets.chomp.to_i
+    while !choice === 1 && !choice === 2 && !choice === 3
+      puts "This is not a valid response. Please enter 1, 2 or 3."
+      choice = gets.chomp.to_i
+    end
+
+    case choice
+    when 1
+      return true
+    when 2
+      save_game
+      return true
+    when 3
+      save_game
+      return false
+    end
   end
 end
